@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    h1= title
+
+    ul
+        each image in image_list
+            li
+                h2 #{image.label} #{image.name}
+                img.imageScr1(src="data:image/png;base64," + image.photo)
+
+        else
+            li There are no photos.

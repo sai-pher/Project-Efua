@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #[strong Project Efua_V1], the very basic version of teh Express web application for Efua, the actively user taught AI.
+
+    h1 Dynamic content
+
+    if error
+        p Error getting dynamic content.
+    else
+        p The Database has the following record counts:
+

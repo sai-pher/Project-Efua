@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Efua</string>
+    <string name="explore">Explore</string>
+    <string name="guess_what">Guess What?</string>
+    <string name="correct_button">correct</string>
+    <string name="wrong_button">wrong</string>
+    <string name="capture_button">capture</string>
+    <string name="label_input">label</string>
+    <string name="test_server">Test Server</string>
+    <string name="textview">TextView</string>
+    <string name="photoTextview">photoTextView</string>
+    <string name="photoTextView">photoTextView</string>
+</resources>
