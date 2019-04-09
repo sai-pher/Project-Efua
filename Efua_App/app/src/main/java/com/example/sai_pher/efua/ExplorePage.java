@@ -45,29 +45,35 @@ public class ExplorePage extends AppCompatActivity {
                 return;
             }
             else {
-                try {
 
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                    TextInputEditText labelIn = findViewById(R.id.labelInput);
+                explore_cycle(data, photo);
 
-                    String label = String.valueOf(labelIn.getText());
-                    String name = label + timeStamp + ".jpg";
-
-                    send(data, label, name);
-
-                    FileOutputStream fos = new FileOutputStream(photo);
-                    fos.write(data);
-                    fos.close();
-
-                    camera.stopPreview();
-                    resetCamera();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
     };
+
+    private void explore_cycle(byte[] data, File photo) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        TextInputEditText labelIn = findViewById(R.id.labelInput);
+
+        String label = String.valueOf(labelIn.getText());
+        String name = label + timeStamp + ".jpg";
+
+        send(data, label, name);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(photo);
+            fos.write(data);
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        camera.stopPreview();
+        resetCamera();
+    }
 
     /**
      * Create a file Uri for saving an image or video
@@ -116,7 +122,7 @@ public class ExplorePage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore_page);
-        frameLayout = findViewById(R.id.frameLayout);
+        frameLayout = findViewById(R.id.explore_frameLayout);
 
         //open camera
         camera = Camera.open();

@@ -21,7 +21,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/explore_frameLayout" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="395dp"
@@ -45,7 +45,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <FrameLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/explore_frameLayout"
         android:layout_width="395dp"
         android:layout_height="549dp"
         android:layout_marginStart="8dp"
@@ -70,11 +70,11 @@
         android:layout_marginRight="8dp"
         android:background="?attr/colorButtonNormal"
         android:text="@string/photoTextView"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/explore_frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout"
+        app:layout_constraintTop_toTopOf="@+id/explore_frameLayout"
         app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>

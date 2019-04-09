@@ -44,10 +44,8 @@ exports.train = function (req, res) {
 
 exports.db_pull = function (req, res) {
     var options = {
-        args:
-            [
-                "label"
-            ]
+        // pythonPath: "path", TODO: use virtual env path here
+        args: ["label"]
     };
     PythonShell.run('/home/sai-pher/work/test_projects/CNN_test/mongo_test.py', options, function (err, data) {
         if (err) res.send(err);
