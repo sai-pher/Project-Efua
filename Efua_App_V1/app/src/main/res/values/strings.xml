@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Efua_V1</string>
+    <string name="explore">Explore</string>
+    <string name="project_efua_v1">Project Efua V1</string>
+    <string name="guess_what">Guess What!</string>
+    <string name="test_server">Test Server</string>
+    <string name="capture">Capture</string>
+    <string name="hint">hint</string>
+    <string name="correct">Correct</string>
+    <string name="wrong">Wrong</string>
+    <string name="label">label:</string>
+    <string name="prediction">prediction</string>
+</resources>
