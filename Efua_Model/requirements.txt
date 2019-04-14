@@ -1,1 +1,4 @@
+tensorflow
 pymongo
+scipy
+Pillow
