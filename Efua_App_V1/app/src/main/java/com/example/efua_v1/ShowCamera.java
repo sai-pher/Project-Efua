@@ -3,8 +3,8 @@ package com.example.efua_v1;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
-import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,37 +22,14 @@ public class ShowCamera extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Camera.Parameters parameters = camera.getParameters();
-
-        List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
-        Camera.Size maxSize = null;
-
-        for (Camera.Size size : sizes) {
-            maxSize = size;
-        }
-
-        //change orientation of camera
-        if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-            parameters.set("orientation", "portrait");
-            camera.setDisplayOrientation(90);
-            parameters.setRotation(90);
-        } else {
-            parameters.set("orientation", "landscape");
-            camera.setDisplayOrientation(0);
-            parameters.setRotation(0);
-        }
-
-        parameters.setPictureSize(maxSize.width, maxSize.height);
-        camera.setParameters(parameters);
-
+    public static Camera getCameraInstance() {
+        Camera c = null;
         try {
-            camera.setPreviewDisplay(holder);
-            camera.startPreview();
-        } catch (IOException e) {
-            e.printStackTrace();
+            c = Camera.open(); // attempt to get a Camera instance
+        } catch (Exception e) {
+            // Camera is not available (in use or does not exist)
         }
+        return c; // returns null if camera is unavailable
     }
 
     @Override
@@ -89,5 +66,42 @@ public class ShowCamera extends SurfaceView implements SurfaceHolder.Callback {
         camera.release();
 
     }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Camera.Parameters parameters = camera.getParameters();
+
+        List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+        Camera.Size maxSize = null;
+
+        for (Camera.Size size : sizes) {
+            maxSize = size;
+        }
+
+        //change orientation of camera
+        if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            parameters.set("orientation", "portrait");
+            camera.setDisplayOrientation(90);
+            parameters.setRotation(90);
+        } else {
+            parameters.set("orientation", "landscape");
+            camera.setDisplayOrientation(0);
+            parameters.setRotation(0);
+        }
+
+        assert maxSize != null;
+        parameters.setPictureSize(maxSize.width, maxSize.height);
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        camera.setParameters(parameters);
+
+        try {
+            camera.setPreviewDisplay(holder);
+            camera.startPreview();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }

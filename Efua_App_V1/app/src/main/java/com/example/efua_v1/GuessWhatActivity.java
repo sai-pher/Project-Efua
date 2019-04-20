@@ -4,13 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.os.Environment;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +35,7 @@ import java.util.concurrent.Executors;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+import static com.example.efua_v1.ShowCamera.getCameraInstance;
 
 public class GuessWhatActivity extends AppCompatActivity {
 
@@ -44,6 +45,7 @@ public class GuessWhatActivity extends AppCompatActivity {
     private static final int INPUT_SIZE = 224;
 
     private Classifier classifier;
+    private Button mBtnTakePicture;
 
     private Executor executor = Executors.newSingleThreadExecutor();
 
@@ -71,9 +73,19 @@ public class GuessWhatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_what);
         frameLayout = findViewById(R.id.guessWhatCameraFrameLayout);
+        mBtnTakePicture = findViewById(R.id.guessWhatCaptureButton);
+
+        mBtnTakePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                captureImage();
+            }
+        });
+
+
 
         //open camera
-        camera = Camera.open();
+        camera = getCameraInstance();
 
         showCamera = new ShowCamera(this, camera);
         frameLayout.addView(showCamera);
@@ -105,7 +117,7 @@ public class GuessWhatActivity extends AppCompatActivity {
         }
 
 
-        camera.stopPreview();
+//        camera.stopPreview();
         resetCamera();
     }
 
@@ -217,6 +229,7 @@ public class GuessWhatActivity extends AppCompatActivity {
 
     private void resetCamera() {
         camera.stopPreview();
+//        releaseCamera();
         camera.startPreview();
     }
 
@@ -237,6 +250,38 @@ public class GuessWhatActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        camera = getCameraInstance();
+    }
+
+
+    private void releaseCamera() {
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();        // release the camera for other applications
+            camera = null;
+        }
     }
 
 }

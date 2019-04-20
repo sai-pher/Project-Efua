@@ -2,10 +2,10 @@ package com.example.efua_v1;
 
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+import static com.example.efua_v1.ShowCamera.getCameraInstance;
 
 public class ExploreActivity extends AppCompatActivity {
 
@@ -59,7 +60,7 @@ public class ExploreActivity extends AppCompatActivity {
         frameLayout = findViewById(R.id.exploreCameraFrameLayout);
 
         //open camera
-        camera = Camera.open();
+        camera = getCameraInstance();
 
         showCamera = new ShowCamera(this, camera);
         frameLayout.addView(showCamera);
@@ -145,7 +146,7 @@ public class ExploreActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.exploreLabelTextView);
         textView.setText(String.format("Label: %s \nName: %s", label, name));
 
-        VolleyManager volley = new VolleyManager(this);
+        VolleyManager volley = VolleyManager.getInstance(getApplicationContext());
 
         String url = volley.getIP_ADDRESS() + ":3000/photo/create";
 
@@ -198,6 +199,40 @@ public class ExploreActivity extends AppCompatActivity {
 
     private void resetCamera() {
         camera.stopPreview();
+        camera.release();
         camera.startPreview();
     }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        camera = getCameraInstance();
+    }
+
+    private void releaseCamera() {
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();        // release the camera for other applications
+            camera = null;
+        }
+    }
+
 }
