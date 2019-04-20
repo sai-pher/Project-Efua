@@ -11,7 +11,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.models import save_model
 
 
-class Base_model:
+class BaseModel:
 
     def __init__(self,
                  data_url,
@@ -191,9 +191,7 @@ class Base_model:
             epochs=epochs,
             validation_data=valid,
             validation_steps=self.num_data // batch_size,
-            callbacks=[tensor_b],
-            use_multiprocessing=True,
-            workers=4)
+            callbacks=[tensor_b])
 
         if save_weights is True:
             if weights_save_path:
@@ -219,7 +217,7 @@ class Base_model:
             print("Conversion path: {path} -> invalid or does not exist.".format(path=conversion_path))
         print("Model written!")
 
-        return True
+        return True, tflite_model
 
     def summary(self):
         return self.model.summary()
