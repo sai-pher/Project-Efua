@@ -23,6 +23,7 @@ data_path = "./data/efua_V1/photos"
 cal_data_path = "./data/efua_V1/caltech_14"
 model_path = "./models"
 results_path = "./models/results"
+download_path = "./models/results/downloads"
 
 
 # use time stamp to select data to pull.
@@ -77,13 +78,18 @@ def image_download(caltech=False, d_path=data_path):
                     photo.write(base64.b64decode(image))
 
 
-def model_upload(d_path, tflite, num_classes, num_data, t_time, sess, epochs):
+def model_upload(d_path, tflite, num_classes, num_data, t_time, sess, epochs, cal=False):
     time = datetime.now()
 
+    if cal:
+        b_name = "cal-tf_model-"
+    else:
+        b_name = "tf_model-"
+
     n = model_collection.count_documents({})
-    model_collection.insert_one({"name": "tf_model-" + str(n + 1),
+    model_collection.insert_one({"name": b_name + str(n + 1),
                                  "tflite_model": tflite,
-                                 "lables": get_labels(d_path),
+                                 "lables": json.dumps(get_labels(d_path)),
                                  "time": str(time),
                                  "train_time": t_time,
                                  "number": sess,
@@ -91,6 +97,23 @@ def model_upload(d_path, tflite, num_classes, num_data, t_time, sess, epochs):
                                  "trained_classes": num_classes,
                                  "trained_images": num_data,
                                  "class_count": build_label_dict(d_path)})
+
+
+def model_download(name):
+    time = datetime.now()
+    collection = model_collection
+    # read all photos from db
+    for x in collection.find({"name": name}):
+        labels = x["lables"]
+        name = x["name"]
+        tflite_model = x["tflite_model"]
+
+        with open(join(download_path, name + ".tflite"), "wb") as model_file:
+            model_file.write(tflite_model)
+
+        with open(join(download_path, name + "_labels.txt"), "a") as labels_txt:
+            for i in labels:
+                labels_txt.write(i)
 
 
 def image_uplaod():
@@ -115,3 +138,5 @@ def image_uplaod():
         print("Written - {} photos - to label: {}".format(c, l))
 
     print("Successfully uploaded {} photos".format(c))
+
+# model_download("tf_model-1")

@@ -62,31 +62,33 @@ class BaseModel:
 
         model = None
 
-        if load_model:
+        if load_model is True:
             if saved_model_url:
+                print("loading model: " + saved_model_url)
                 model = tf.keras.models.load_model(saved_model_url)
+                print("model loaded!")
             else:
                 print("no model specified")
 
         else:
             model = Sequential()
             model.add(Conv2D(32, (3, 3), input_shape=[image_size, image_size, 3], strides=2))
-            model.add(Activation('relu'))
-            model.add(BatchNormalization())
+            # model.add(Activation('relu'))
+            # model.add(BatchNormalization())
             model.add(MaxPooling2D(pool_size=(2, 2)))
-            model.add(Dropout(0.25))
+            # model.add(Dropout(0.25))
 
             model.add(Conv2D(64, (3, 3)))
             model.add(Activation('relu'))
             model.add(BatchNormalization())
-            # model.add(Dropout(0.25))
+            model.add(Dropout(0.3))
 
             # model.add(MaxPooling2D(pool_size=(2, 2)))
 
             model.add(Conv2D(64, (3, 3)))
             model.add(Activation('relu'))
             model.add(BatchNormalization())
-            # model.add(Dropout(0.25))
+            model.add(Dropout(0.35))
 
             # model.add(MaxPooling2D(pool_size=(3, 3), strides=2))
 
@@ -94,12 +96,12 @@ class BaseModel:
             model.add(Activation('relu'))
             model.add(BatchNormalization())
             model.add(MaxPooling2D(pool_size=(2, 2)))
-            model.add(Dropout(0.25))
+            model.add(Dropout(0.4))
 
             model.add(Conv2D(128, (3, 3), strides=2))
             model.add(Activation('relu'))
             model.add(BatchNormalization())
-            # model.add(Dropout(0.25))
+            model.add(Dropout(0.45))
             # model.add(MaxPooling2D(pool_size=(2, 2)))
 
             model.add(Conv2D(128, (3, 3)))
@@ -107,7 +109,7 @@ class BaseModel:
             model.add(BatchNormalization())
 
             model.add(MaxPooling2D(pool_size=(2, 2)))
-            model.add(Dropout(0.25))
+            model.add(Dropout(0.5))
 
             # model.add(Conv2D(128, (5, 5)))
             # model.add(Activation('relu'))
@@ -117,13 +119,15 @@ class BaseModel:
             model.add(Activation('relu'))
             # model.add(Dense(1024))
             model.add(BatchNormalization())
-            model.add(Dropout(0.5))
+            # model.add(Dropout(0.5))
             model.add(Dense(num_classes))
             model.add(Activation('softmax'))
 
             if load_weights is True:
                 if saved_model_weights_url:
+                    print("Loading model weights " + saved_model_weights_url)
                     model.load_weights(saved_model_weights_url)
+                    print("Weights loaded!\n================================")
                 else:
                     print("no model weights specified")
 
@@ -167,7 +171,7 @@ class BaseModel:
         if write is True:
             if log_dir:
                 tensor_board = TensorBoard(log_dir=log_dir, histogram_freq=1, write_graph=True,
-                                           write_images=False)
+                                           write_images=True, batch_size=self.batch_size)
             else:
                 print("log_dir: {log} -> invalid or does not exist.".format(log=log_dir))
 
@@ -220,4 +224,8 @@ class BaseModel:
         return True, tflite_model
 
     def summary(self):
-        return self.model.summary()
+        labels = self.training_data.labels
+        classes = self.training_data.class_indices
+        classei = self.training_data.class_indices
+        summary = self.model.summary()
+        return summary
