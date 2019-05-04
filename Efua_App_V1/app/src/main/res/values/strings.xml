@@ -10,4 +10,7 @@
     <string name="wrong">Wrong</string>
     <string name="label">label:</string>
     <string name="prediction">prediction</string>
+    <string name="update">Update</string>
+    <string name="submit">Submit</string>
+    <string name="new_label">New Label</string>
 </resources>

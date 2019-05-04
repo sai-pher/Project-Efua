@@ -1,14 +1,18 @@
 package com.example.efua_v1;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -39,8 +43,8 @@ import static com.example.efua_v1.ShowCamera.getCameraInstance;
 
 public class GuessWhatActivity extends AppCompatActivity {
 
-    private static final String MODEL_PATH = "mobilenet_quant_v1_224.tflite";
-    private static final boolean QUANT = true;
+    private static final String MODEL_PATH = "mobilenet_float_v1_224.tflite";
+    private static final boolean QUANT = false;
     private static final String LABEL_PATH = "labels.txt";
     private static final int INPUT_SIZE = 224;
 
@@ -62,7 +66,7 @@ public class GuessWhatActivity extends AppCompatActivity {
             }
             else {
 
-                explore_cycle(data, photo);
+                guess_cycle(data, photo);
 
             }
         }
@@ -91,9 +95,11 @@ public class GuessWhatActivity extends AppCompatActivity {
         frameLayout.addView(showCamera);
 
         initTensorFlowAndLoadModel();
+
+
     }
 
-    private void explore_cycle(byte[] data, File photo) {
+    private void guess_cycle(byte[] data, File photo) {
 
         Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
 
@@ -105,7 +111,14 @@ public class GuessWhatActivity extends AppCompatActivity {
 
         pred.setText(results.toString());
 
-
+        int num = results.size();
+        for (Classifier.Recognition prediction : results) {
+            boolean[] bool = alert(prediction, data, num);
+            if (bool[0])
+                break;
+            else
+                num -= 1;
+        }
 
         FileOutputStream fos = null;
         try {
@@ -171,7 +184,10 @@ public class GuessWhatActivity extends AppCompatActivity {
 
     }
 
-    public void send(final byte[] photo, final String label, final String name) {
+    public void send(final byte[] photo, final String label) {
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        final String name = label + timeStamp + ".jpg";
 
         Toast.makeText(getApplicationContext(), "Sending: " + label + " " + name, Toast.LENGTH_LONG).show();
         Log.d("Sending: ", label + " " + name);
@@ -229,7 +245,6 @@ public class GuessWhatActivity extends AppCompatActivity {
 
     private void resetCamera() {
         camera.stopPreview();
-//        releaseCamera();
         camera.startPreview();
     }
 
@@ -252,36 +267,61 @@ public class GuessWhatActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        releaseCamera();
+    private boolean[] alert(final Classifier.Recognition prediction, final byte[] data, final int num) {
+
+        final boolean[] break_val = {false};
+
+        new AlertDialog.Builder(this)
+                .setMessage(prediction.toString())
+                .setPositiveButton("Correct!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        send(data, prediction.getTitle());
+                        break_val[0] = true;
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("Wrong", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (num > 1)
+                    dialog.dismiss();
+                else {
+                    newLabel(data);
+                }
+            }
+        }).show();
+//        AlertDialog alertDialog = builder.create();
+//
+//        alertDialog.show();
+
+        return break_val;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
+    private void newLabel(final byte[] data) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.label_input_new, null);
+        builder.setView(dialogView);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        releaseCamera();
-    }
+        final AlertDialog alertDialog = builder.create();
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        camera = getCameraInstance();
-    }
+        final TextInputEditText editText = dialogView.findViewById(R.id.new_text_lable);
+        Button button = dialogView.findViewById(R.id.button);
 
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String label = String.valueOf(editText.getText());
 
-    private void releaseCamera() {
-        if (camera != null) {
-            camera.stopPreview();
-            camera.release();        // release the camera for other applications
-            camera = null;
-        }
+                send(data, label);
+
+                alertDialog.dismiss();
+
+            }
+        });
+
+        alertDialog.show();
+
     }
 
 }

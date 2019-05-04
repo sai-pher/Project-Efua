@@ -1,0 +1,10 @@
+bag
+bottle
+car
+chair
+hand
+laptop
+phone
+plant
+shoes
+slippers

@@ -3,6 +3,7 @@ package com.example.efua_v1;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -26,8 +27,10 @@ public class ShowCamera extends SurfaceView implements SurfaceHolder.Callback {
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance
+            Log.d("camera", "camera open");
         } catch (Exception e) {
             // Camera is not available (in use or does not exist)
+            Log.d("camera", "failed to open");
         }
         return c; // returns null if camera is unavailable
     }
@@ -69,6 +72,7 @@ public class ShowCamera extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        assert camera != null;
         Camera.Parameters parameters = camera.getParameters();
 
         List<Camera.Size> sizes = parameters.getSupportedPictureSizes();

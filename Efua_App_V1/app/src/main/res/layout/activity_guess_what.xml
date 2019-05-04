@@ -67,8 +67,8 @@
 
     <TextView
         android:id="@+id/guessWhatPredictionTextView"
-        android:layout_width="125dp"
-        android:layout_height="44dp"
+        android:layout_width="374dp"
+        android:layout_height="96dp"
         android:layout_marginStart="143dp"
         android:layout_marginLeft="143dp"
         android:layout_marginTop="51dp"

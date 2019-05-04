@@ -199,40 +199,10 @@ public class ExploreActivity extends AppCompatActivity {
 
     private void resetCamera() {
         camera.stopPreview();
-        camera.release();
         camera.startPreview();
     }
 
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        releaseCamera();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        releaseCamera();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        camera = getCameraInstance();
-    }
-
-    private void releaseCamera() {
-        if (camera != null) {
-            camera.stopPreview();
-            camera.release();        // release the camera for other applications
-            camera = null;
-        }
-    }
 
 }
