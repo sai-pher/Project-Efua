@@ -3,14 +3,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+
+var cron = require('node-cron');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var photo_routs = require('./routes/photo_routs');
 var ml_routs = require('./routes/ml_routs');
 
-var mongoose = require('mongoose');
 
 var mongoDB = 'mongodb://127.0.0.1/efua_V1';
 mongoose.connect(mongoDB);
@@ -32,6 +35,7 @@ app.use(express.urlencoded({limit: '50mb', extended: false}));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
@@ -54,5 +58,6 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+
 
 module.exports = app;

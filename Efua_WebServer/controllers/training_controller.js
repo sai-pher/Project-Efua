@@ -1,27 +1,12 @@
 var {PythonShell} = require('python-shell');
 const {spawn} = require('child_process');
+const cron = require('node-cron');
+
+var models = require('../models/models');
 
 const python_path = "/home/sai-pher/work/Project_Efua/Efua_Model/venv/bin/python";
 const script_path = "/home/sai-pher/work/Project_Efua/Efua_Model";
 
-exports.train_test = function (req, res) {
-    // PythonShell.run('/home/sai-pher/work/test_projects/CNN_test/models/train.py', null, function (err, data) {
-    //     if (err) res.send(err);
-    //     res.send(data.toString())
-    // });
-
-    console.log("starting training");
-    var process = spawn('python', ["/home/sai-pher/work/test_projects/CNN_test/models/mock_train.py", req.params.id]);
-
-    console.log("training.....");
-
-    process.stdout.on('data', function (data) {
-        res.render("display_view", {message: data.toString()});
-    });
-
-    console.log("training from server complete!")
-
-};
 
 exports.train = function (req, res) {
 
@@ -31,24 +16,46 @@ exports.train = function (req, res) {
     };
     // TODO: create train activation logic
 
+
     PythonShell.run('train_handler.py', options, function (err, data) {
         if (err) res.send(err.message);
-        res.send(data.slice(-2))
+
+        // send data here
+
+        // res.write(data.slice(-2));
     });
 
+    res.send("training....")
+};
+
+exports.update = function (req, res) {
+
+    models.find({}).sort({number: -1}).limit(1).exec(function (err, result) {
+        if (err)
+            res.send(err);
+        else
+            res.send(result[0].tflite_model)
+    })
 
 
 };
 
-
-exports.db_pull = function (req, res) {
-    var options = {
-        // pythonPath: "path", TODO: use virtual env path here
-        args: ["label"]
+cron.schedule("30 20 * * *", function () {
+    let options = {
+        pythonPath: python_path,
+        scriptPath: script_path,
     };
-    PythonShell.run('/home/sai-pher/work/test_projects/CNN_test/mongo_test.py', options, function (err, data) {
-        if (err) res.send(err);
-        res.send(data.toString())
+    // TODO: create train activation logic
+
+
+    PythonShell.run('train_handler.py', options, function (err, data) {
+        if (err) console.log(err.message);
+
+        // send data here
+
+        // res.write(data.slice(-2));
     });
-};
+
+    console.log("training....")
+});
 

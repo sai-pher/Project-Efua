@@ -22,5 +22,7 @@ router.get('/:id', photos_controller.photo_detail);
 
 router.get('/test', photos_controller.photo_test);
 
+router.get('/counts', photos_controller.photo_count);
+
 
 module.exports = router;

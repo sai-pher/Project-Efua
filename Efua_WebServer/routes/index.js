@@ -11,7 +11,7 @@ router.get('/test', function (req, res, next) {
 });
 
 router.get('/ok', function (req, res, next) {
-    res.send("A - OK!")
+    res.send(["A-", " OK!"])
 });
 
 module.exports = router;

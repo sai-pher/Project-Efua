@@ -1,4 +1,10 @@
 var Photo = require('../models/photos');
+var {PythonShell} = require('python-shell');
+
+
+const python_path = "/home/sai-pher/work/Project_Efua/Efua_Model/venv/bin/python";
+const script_path = "/home/sai-pher/work/Project_Efua/Efua_Model";
+
 // const base64decode = require('nodejs-base64');
 
 
@@ -41,8 +47,40 @@ exports.photo_create_post = function (req, res) {
                 console.log(err);
                 console.log("broken");
                 res.send("Save Unsuccessful")
-            } else
-                res.send("Photo Saved!")
+            } else {
+                Photo.countDocuments({label: photo_label}).exec(function (err, count) {
+                    if (err) console.log(err);
+                    res.send("Photo Saved!\n" + photo_label + ": " + count);
+                });
+
+                // Photo.countDocuments({}).exec(function (err, count) {
+                //     if (err)
+                //         console.log(err);
+                //     else {
+                //         if (count % 50 === 0) {
+                //             let options = {
+                //                 pythonPath: python_path,
+                //                 scriptPath: script_path,
+                //             };
+                //             // TODO: create train activation logic
+                //
+                //
+                //             PythonShell.run('train_handler.py', options, function (err, data) {
+                //                 console.log("training...");
+                //                 if (err) console.log(err.message);
+                //                 else{
+                //                     console.log(data.slice(-2))
+                //                 }
+                //
+                //                 // send data here
+                //
+                //                 // res.write(data.slice(-2));
+                //             });
+                //         }
+                //     }
+                // })
+
+            }
         }
     )
 
@@ -66,6 +104,13 @@ exports.photo_update_post = function (req, res) {
 exports.photo_test = function (req, res) {
     data = "some text";
     res.render('display_view', data);
+};
+
+exports.photo_count = function (req, res) {
+    Photo.aggregate({$group: {_id: {label: '$label'}, count: {$sum: 1}}}).exec(function (err, counts) {
+        if (err) return err;
+        res.send(counts)
+    })
 };
 
 
